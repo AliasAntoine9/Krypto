@@ -1,0 +1,14 @@
+3 methods to compute RSI indicator:
+	- SMA method
+	- EMA method
+	- Wilder method
+
+SMA:
+	- RSI = 100 - (100/(1+RS))
+	- RS  = UpAverage / DownAverage
+	- UpAverage = all_ups_in_the_last_14th_closes / 14
+
+EMA:
+	- RSI = (Close - PreviousEma) * Multipler + PreviousEma
+	- Multiplier = (2/(TimePeriods+1))
+
