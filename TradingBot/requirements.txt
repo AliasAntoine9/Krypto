@@ -1,5 +1,4 @@
 pandas~=1.3.4
-TA-Lib
 numpy~=1.21.4
 websocket-client~=1.2.1
 requests~=2.26.0
