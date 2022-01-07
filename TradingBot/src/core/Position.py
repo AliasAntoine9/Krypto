@@ -1,7 +1,7 @@
 import pickle
 from os.path import exists
 from pathlib import Path
-from src.strategies.rsi.DecisionRules import search_candle_to_buy
+from TradingBot.src.strategies.rsi.DecisionRules import search_candle_to_buy
 from datetime import datetime
 
 

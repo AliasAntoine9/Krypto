@@ -1,6 +1,6 @@
-from src.strategies.rsi.ParseMarketData import ParseMarketData
-from src.strategies.rsi.ComputeRsi import ComputeRsi
-from src.core.Position import create_new_position
+from TradingBot.src.strategies.rsi.ParseMarketData import ParseMarketData
+from TradingBot.src.strategies.rsi.ComputeRsi import ComputeRsi
+from TradingBot.src.core.Position import create_new_position
 
 
 def rsi_strategy(symbol, all_positions):

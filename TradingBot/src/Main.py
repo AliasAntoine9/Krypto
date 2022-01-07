@@ -1,4 +1,4 @@
-from src.core.ScheduleStrategy import Scheduler
+from TradingBot.src.core.ScheduleStrategy import Scheduler
 
 
 if __name__ == "__main__":

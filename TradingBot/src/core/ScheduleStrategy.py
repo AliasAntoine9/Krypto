@@ -1,6 +1,6 @@
 import schedule
-from src.core.CryptoBot import rsi_strategy
-from src.core.Position import Position, get_previous_positions_for
+from TradingBot.src.core.CryptoBot import rsi_strategy
+from TradingBot.src.core.Position import Position, get_previous_positions_for
 
 
 class Scheduler:
