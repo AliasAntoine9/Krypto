@@ -29,9 +29,9 @@ def check_which_candles_are_above_35_rsi(nb_of_values_above_35, df_tail):
             if row["rsi_above_35"]:
                 c += 1
             if c == 5:
-                candle_to_buy = row["closeTime"] + timedelta(seconds=1)
-                candle_trigger = row["closeTime"]
-                return candle_to_buy, candle_trigger, df_tail
+                opentime_candle_to_buy = row["closetime"] + timedelta(seconds=1)
+                opentime_candle_trigger = row["opentime"]
+                return opentime_candle_to_buy, opentime_candle_trigger, df_tail
         return "", "", df_tail
     else:
         return "", "", df_tail
@@ -45,6 +45,9 @@ def search_candle_to_buy(df):
     df_tail = df[signal:last_row]
 
     nb_of_values_above_35 = count_values_above_35(df_tail)
-    candle_to_buy, candle_trigger, df_tail = check_which_candles_are_above_35_rsi(nb_of_values_above_35, df_tail)
+    opentime_candle_to_buy, opentime_candle_trigger, df_tail = check_which_candles_are_above_35_rsi(
+        nb_of_values_above_35,
+        df_tail
+    )
 
-    return candle_to_buy, candle_trigger, df_tail
+    return opentime_candle_to_buy, opentime_candle_trigger, df_tail

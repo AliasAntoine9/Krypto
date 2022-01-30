@@ -6,10 +6,10 @@ from datetime import datetime
 class ParseMarketData:
     def __init__(self, symbol):
         self.symbol = symbol
-        self.df_close = pd.DataFrame({
-            "closeTime": [],
+        self.df_candles = pd.DataFrame({
+            "closetime": [],
             "close": [],
-            "openTime": [],
+            "opentime": [],
             "open": [],
             "high": [],
             "low": [],
@@ -20,17 +20,17 @@ class ParseMarketData:
     def get_data(self):
         """This method return a list from Binance API"""
         base_url = "https://api2.binance.com/api/v3/klines"
-        params = f"?symbol={self.symbol}USDT&interval=15m&limit=1000"
+        params = f"?symbol={self.symbol.upper()}USDT&interval=15m&limit=1000"
         url = base_url + params
         return get(url=url).json()
 
     def feed_dataframe(self, answer):
         for period in answer:
-            self.df_close = self.df_close.append(
+            self.df_candles = self.df_candles.append(
                 pd.Series({
-                    "closeTime": period[6],
+                    "closetime": period[6],
                     "close": period[4],
-                    "openTime": period[0],
+                    "opentime": period[0],
                     "open": period[1],
                     "high": period[2],
                     "low": period[3],
@@ -45,13 +45,13 @@ class ParseMarketData:
             # 1st -> Convert the string period[i] to int
             # 2nd -> Convert MillisecondsUnixTimestamp to UnixTimeStamp
             # 3rd -> Convert UnixTimestamp to string well formatted
-            str_openTime_formatted = datetime.fromtimestamp(int(period[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
-            str_closeTime_formatted = datetime.strftime(datetime.fromtimestamp(int(period[6]) / 1000),
+            str_opentime_formatted = datetime.fromtimestamp(int(period[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
+            str_closetime_formatted = datetime.strftime(datetime.fromtimestamp(int(period[6]) / 1000),
                                                         "%Y-%m-%d %H:%M:%S")
 
             # Convert string to datetime64 format
-            period[0] = datetime.strptime(str_openTime_formatted, "%Y-%m-%d %H:%M:%S")
-            period[6] = datetime.strptime(str_closeTime_formatted, "%Y-%m-%d %H:%M:%S")
+            period[0] = datetime.strptime(str_opentime_formatted, "%Y-%m-%d %H:%M:%S")
+            period[6] = datetime.strptime(str_closetime_formatted, "%Y-%m-%d %H:%M:%S")
         return list_answers
 
     def create_dataframe(self):
@@ -59,7 +59,7 @@ class ParseMarketData:
         answer = self.change_datetime_format(answer)
         self.feed_dataframe(answer)
         # self.df_close.to_csv(f"{self.symbol}_close_{self.timestamp}.csv", index=False)
-        return self.df_close
+        return self.df_candles
 
 
 # 1 period is:

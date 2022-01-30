@@ -29,7 +29,7 @@ class GetCandles:
             # Open Excel file
             df_excel_file = pd.read_excel("VET_rsi_with_ema.xlsx", sheet_name="15m")
             # Index column
-            self.last_index = df_excel_file["row"].iloc[-1] + 1
+            self.last_index = df_excel_file["id"].iloc[-1] + 1
             # startTime value
             # date_starttime = datetime.strptime(df_excel_file["closeTime"].iloc[-1], "%Y-%m-%d %H:%M:%S.%f")   This line converts string to datetime
             date_starttime = df_excel_file["closeTime"].iloc[-1]
@@ -68,7 +68,7 @@ class GetCandles:
 
     def insert_index_column(self):
         list_index = [i for i in range(self.last_index, self.last_index + self.df_last_candles.shape[0])]
-        self.df_last_candles.insert(0, "row", list_index)
+        self.df_last_candles.insert(0, "id", list_index)
 
     @staticmethod
     def change_datetime_format(list_answers):
@@ -86,7 +86,7 @@ class GetCandles:
             period[6] = datetime.strptime(str_closeTime_formatted, "%Y-%m-%d %H:%M:%S")
         return list_answers
 
-    def insert_new_candles(self):
+    def export_new_candles_to_excel(self):
         while self.feed_1_more_time_:
             answer = self.get_data()
             answer = self.change_datetime_format(answer)
@@ -101,4 +101,4 @@ getter = GetCandles(
     interval="15m",
     limit="1000"
 )
-getter.insert_new_candles()
+getter.export_new_candles_to_excel()
