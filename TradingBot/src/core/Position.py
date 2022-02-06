@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from dataclasses import dataclass
 
 from TradingBot.src.strategies.rsi.DecisionRules import search_candle_to_buy
+from TradingBot.src.utils.KryptoProperties import KryptoProperties
 
 
 class Position:
@@ -81,41 +82,26 @@ class Position:
 
 class PreviousPositions:
     """Get previous positions for 1 symbol (crypto)"""
+
     @dataclass
     class Dataframe:
-        opened_positions = pd.DataFrame()
-        closed_position = pd.DataFrame()
+        positions = pd.DataFrame()
 
     def __init__(self, symbol):
         self.symbol = symbol
         self.df = self.Dataframe()
-        self.get_positions()
+        self.db_uri = KryptoProperties.db_url
+        self.get_positions("opened")
+        self.get_positions("closed")
 
-    def get_opened_positions(self):
+    def get_positions(self, status):
         """This method allows to get the opened position for 1 symbol"""
         # poseidon <=> The engine
-        db_uri = "sqlite:///../poseidon.db"
-        poseidon = create_engine(db_uri, echo=True)
-        tb_open = f"{self.symbol}_opened_positions"
 
-        self.df.opened_positions = pd.read_sql_table(
-            table_name=tb_open,
+        poseidon = create_engine(self.db_uri, echo=True)
+        tb_name = f"{self.symbol}_{status}_positions"
+
+        self.df.positions = pd.read_sql_table(
+            table_name=tb_name,
             con=poseidon
         )
-
-    def get_closed_positions(self):
-        """This method allows to get the historic of all closed position for 1 symbol"""
-        # poseidon <=> The engine
-        db_uri = "sqlite:///../poseidon.db"
-        poseidon = create_engine(db_uri, echo=True)
-        tb_close = f"{self.symbol}_closed_positions"
-
-        # Get positions store in Sql database into a df
-        self.df.closed_positions = pd.read_sql_table(
-            table_name=tb_close,
-            con=poseidon
-        )
-
-    def get_positions(self):
-        self.get_opened_positions()
-        self.get_closed_positions()
