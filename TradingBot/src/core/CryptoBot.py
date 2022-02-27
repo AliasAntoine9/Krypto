@@ -13,7 +13,7 @@ def rsi_strategy(symbol):
     Computer.compute_rsi()
 
     # Step 3
-    position = Position(symbol, )
+    position = Position(symbol)
     position.run(df_candles=df_candles)
 
     # step 4

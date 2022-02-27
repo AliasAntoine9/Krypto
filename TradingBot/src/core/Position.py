@@ -7,17 +7,18 @@ from TradingBot.src.strategies.rsi.DecisionRules import search_candle_to_buy
 from TradingBot.src.utils.KryptoProperties import KryptoProperties
 
 
+@dataclass
 class Position:
+    opentime_candle_trigger: str
+    opentime_candle_to_buy: str
+    buy_timestamp: str
+    price: int
+    price_to_sale: int
+    bet: int
+    crypto_quantity: int
 
     def __init__(self, symbol):
         self.symbol = symbol
-        self.opentime_candle_trigger = ""
-        self.opentime_candle_to_buy = ""
-        self.buy_timestamp = ""
-        self.price = 0
-        self.price_to_sale = 0
-        self.bet = 0
-        self.crypto_quantity = 0
 
     def candle_to_buy_is_the_last_candle(self, df_tail):
         last_row = df_tail.last_valid_index()

@@ -32,7 +32,7 @@ class GetCandles:
             self.last_index = df_excel_file["id"].iloc[-1] + 1
             # startTime value
             # date_starttime = datetime.strptime(df_excel_file["closeTime"].iloc[-1], "%Y-%m-%d %H:%M:%S.%f")   This line converts string to datetime
-            date_starttime = df_excel_file["closeTime"].iloc[-1]
+            date_starttime = df_excel_file["closetime"].iloc[-1]
             self.startTime = int(time.mktime(date_starttime.timetuple())*1000)
         else:
             # startTime value
