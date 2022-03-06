@@ -3,6 +3,5 @@ from TradingBot.src.utils.KryptoProperties import KryptoProperties
 
 if __name__ == "__main__":
     KryptoProperties.load_properties()
-    """CryptoBot = Scheduler()
+    CryptoBot = Scheduler()
     CryptoBot.start()
-    # CryptoBot.start_schedule()"""

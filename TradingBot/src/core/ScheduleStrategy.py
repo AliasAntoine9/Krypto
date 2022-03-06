@@ -1,5 +1,4 @@
 import time
-
 import schedule
 
 from TradingBot.src.core.CryptoBot import rsi_strategy
@@ -10,11 +9,9 @@ class Scheduler:
     @staticmethod
     def start_schedule():
         symbol = "vet"
-        all_positions = get_previous_positions_for(symbol=symbol)
         schedule.every(20).seconds.do(
             rsi_strategy,
-            symbol=symbol,
-            all_positions=all_positions
+            symbol=symbol
         )
         while True:
             schedule.run_pending()
@@ -22,7 +19,6 @@ class Scheduler:
     @staticmethod
     def start():
         symbol = "vet"
-        all_positions = get_previous_positions_for(symbol=symbol)
         while True:
-            rsi_strategy(symbol=symbol, all_positions=all_positions)
+            rsi_strategy(symbol=symbol)
             time.sleep(20)
