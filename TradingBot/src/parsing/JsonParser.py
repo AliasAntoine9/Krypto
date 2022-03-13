@@ -24,7 +24,7 @@ class JsonParser:
         self.dt_format = "%Y-%m-%d %H:%M:%S"
         self.response = dict()
 
-    def load_binance_response_in_dict(self, response):
+    def load_binance_response_in_list(self, response):
         try:
             self.response = response.json()
         except:
@@ -59,9 +59,10 @@ class JsonParser:
                     "volume": candle[5]
                 }),
                 ignore_index=True)
+        self.df.candles = candles
 
-    def transform_response_to_df(self, response):
-        self.load_binance_response_in_dict(response)
+    def transform_to_df(self, response):
+        self.load_binance_response_in_list(response)
         self.change_datetime_format()
         self.feed_candles_df()
         # self.df_close.to_csv(f"{self.symbol}_close_{self.timestamp}.csv", index=False)

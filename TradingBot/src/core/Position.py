@@ -9,37 +9,39 @@ from TradingBot.src.utils.KryptoProperties import KryptoProperties
 
 @dataclass
 class Position:
-    opentime_candle_trigger: str
-    opentime_candle_to_buy: str
-    buy_timestamp: str
-    price: int
-    price_to_sale: int
-    bet: int
-    crypto_quantity: int
+    opentime_trigger_candle: str
+    opentime_buying_candle: str
+    buying_timestamp: str
+    buying_price: float
+    target_sales_price: float
+    bet: float
+    crypto_quantity: float
 
     def __init__(self, symbol):
         self.symbol = symbol
 
     def candle_to_buy_is_the_last_candle(self, df_tail):
         last_row = df_tail.last_valid_index()
-        if df_tail["closetime"][last_row] == self.opentime_candle_trigger:
+        if df_tail["closetime"][last_row] == self.opentime_trigger_candle:
             return True
         else:
             return False
 
-    def take_position_if_new(self, df_candles, previous_positions):
-        self.opentime_candle_to_buy, self.opentime_candle_trigger, df_tail = search_candle_to_buy(df=df_candles)
-        candle_to_buy = self.opentime_candle_to_buy
+    def take_position_if_new(self, candles, previous_positions):
+        self.opentime_buying_candle, self.opentime_trigger_candle, df_tail = search_candle_to_buy(df=candles)
+        candle_to_buy = self.opentime_buying_candle
         opened_positions = previous_positions.df.opened_positions
 
         if candle_to_buy not in opened_positions and self.candle_to_buy_is_the_last_candle(df_tail):
             self.buy()
             self.create_new_position()
             print(f"""Time: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  |  New position created""")
+        else:
+            print("\nNo VET bought. Waiting for the good moment...\n")
 
-    def run(self, df_candles):
+    def run(self, candles):
         previous_position = PreviousPositions(self.symbol)
-        self.take_position_if_new(df_candles=df_candles, previous_positions=previous_position)
+        self.take_position_if_new(candles, previous_position)
 
     def buy(self):
         pass
@@ -48,9 +50,11 @@ class Position:
         pass
 
     def create_new_position(self):
-        self.buy_timestamp = ...
-        self.price = ...
-        self.price_to_sale = ...
+        self.opentime_trigger_candle = ...
+        self.opentime_buying_candle = ...
+        self.buying_timestamp = ...
+        self.buying_price = ...
+        self.target_sales_price = ...
         self.bet = ...
         self.crypto_quantity = ...
         self.insert_new_position_in_sql()
@@ -69,11 +73,11 @@ class Position:
     def create_df_position(self):
         df_position = pd.DataFrame(
             {
-                "opentime_candle_trigger": [self.opentime_candle_trigger],
-                "opentime_candle_to_buy": [self.opentime_candle_to_buy],
-                "buy_timestamp": [self.buy_timestamp],
-                "price": [self.price],
-                "price_to_sale": [self.price * 1.02],
+                "opentime_trigger_candle": [self.opentime_trigger_candle],
+                "opentime_buying_candle": [self.opentime_buying_candle],
+                "buying_timestamp": [self.buying_timestamp],
+                "buying_price": [self.buying_price],
+                "target_sales_price": [self.buying_price * 1.02],
                 "bet": [self.bet],
                 "crypto_quantity": [self.crypto_quantity],
             }
@@ -86,23 +90,26 @@ class PreviousPositions:
 
     @dataclass
     class Dataframe:
-        positions = pd.DataFrame()
+        opened_positions = pd.DataFrame()
+        closed_positions = pd.DataFrame()
 
     def __init__(self, symbol):
         self.symbol = symbol
         self.df = self.Dataframe()
         self.db_uri = KryptoProperties.db_url
-        self.get_positions("opened")
-        self.get_positions("closed")
+        self.get_positions()
 
-    def get_positions(self, status):
+    def get_positions(self):
         """This method allows to get the opened position for 1 symbol"""
         # poseidon <=> The engine
 
-        poseidon = create_engine(self.db_uri, echo=True)
-        tb_name = f"{self.symbol}_{status}_positions"
+        for status in ("opened", "closed"):
+            poseidon = create_engine(self.db_uri, echo=True)
+            tb_name = f"{self.symbol}_{status}_positions"
 
-        self.df.positions = pd.read_sql_table(
-            table_name=tb_name,
-            con=poseidon
-        )
+            positions = pd.read_sql_table(
+                table_name=tb_name,
+                con=poseidon
+            )
+
+            setattr(self.df, f"{status}_positions", positions)

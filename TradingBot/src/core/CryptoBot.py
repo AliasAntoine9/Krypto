@@ -11,21 +11,21 @@ def rsi_strategy(symbol):
 
     # Step 2
     parser = JsonParser()
-    df_candles = parser.transform_response_to_df(response)
+    candles = parser.transform_to_df(response)
 
     # Step 3
-    Computer = ComputeRsi(df_candles=df_candles)
+    Computer = ComputeRsi(candles)
     Computer.compute_rsi()
 
     # Step 4
     position = Position(symbol)
-    position.run(df_candles=df_candles)
+    position.run(candles=candles)
 
     # step 5
     # records_buy_sell_movements_in_database()
 
-    return df_candles
+    return candles
 
 
 if __name__ == "__main__":
-    df_candles_ = rsi_strategy(symbol="vet")
+    candles_ = rsi_strategy(symbol="vet")
