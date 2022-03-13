@@ -20,19 +20,19 @@ class Position:
     def __init__(self, symbol):
         self.symbol = symbol
 
-    def candle_to_buy_is_the_last_candle(self, df_tail):
-        last_row = df_tail.last_valid_index()
-        if df_tail["closetime"][last_row] == self.opentime_trigger_candle:
+    def candle_to_buy_is_the_last_candle(self, candles_tail):
+        last_row = candles_tail.last_valid_index()
+        if candles_tail["closetime"][last_row] == self.opentime_trigger_candle:
             return True
         else:
             return False
 
     def take_position_if_new(self, candles, previous_positions):
-        self.opentime_buying_candle, self.opentime_trigger_candle, df_tail = search_candle_to_buy(df=candles)
+        self.opentime_buying_candle, self.opentime_trigger_candle, candles_tail = search_candle_to_buy(candles)
         candle_to_buy = self.opentime_buying_candle
         opened_positions = previous_positions.df.opened_positions
 
-        if candle_to_buy not in opened_positions and self.candle_to_buy_is_the_last_candle(df_tail):
+        if candle_to_buy not in opened_positions and self.candle_to_buy_is_the_last_candle(candles_tail):
             self.buy()
             self.create_new_position()
             print(f"""Time: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}  |  New position created""")
@@ -63,7 +63,7 @@ class Position:
         # poseidon <=> The engine
         db_uri = "sqlite:///../poseidon.db"
         poseidon = create_engine(db_uri, echo=True)
-        tb_name = "opened_positions"
+        tb_name = f"{self.symbol}_opened_positions"
 
         df_position = self.create_df_position()
 
@@ -71,7 +71,7 @@ class Position:
         df_position.to_sql(tb_name, con=poseidon, if_exists="append", index=False)
 
     def create_df_position(self):
-        df_position = pd.DataFrame(
+        new_position = pd.DataFrame(
             {
                 "opentime_trigger_candle": [self.opentime_trigger_candle],
                 "opentime_buying_candle": [self.opentime_buying_candle],
@@ -82,7 +82,7 @@ class Position:
                 "crypto_quantity": [self.crypto_quantity],
             }
         )
-        return df_position
+        return new_position
 
 
 class PreviousPositions:
