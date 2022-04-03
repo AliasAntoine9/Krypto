@@ -4,22 +4,23 @@ from dataclasses import dataclass
 import logging
 
 from src.strategies.rsi.DecisionRules import search_candle_to_buy
-from src.utils.tools import Candle, PreviousPositions
+from src.utils.tools import Candle, Position, PreviousPositions
 
 logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S")
 
 
-@dataclass
 class Action:
     """
     This class is used to check if there is a buy or sell action to make. If there is, the CryptoBot will buy
     and/or sell crypto on Binance.
     """
-    symbol: str
-    candle_to_buy = Candle()
-    candle_trigger = Candle()
-    candles_tail = pd.DataFrame()
-    previous_position = PreviousPositions()
+    def __init__(self, symbol, candles):
+        self.symbol = symbol
+        self.candles = candles
+        self.candle_to_buy = Candle()
+        self.candle_trigger = Candle()
+        self.candles_tail = pd.DataFrame()
+        self.previous_positions = PreviousPositions(self.symbol)
 
     def candle_to_buy_is_the_last_candle(self):
         print("wait")
@@ -28,34 +29,35 @@ class Action:
         else:
             return False
 
-    def run(self, candles):
-        previous_positions = PreviousPositions(self.symbol)
-        self.buying_signal(candles, previous_positions)
-        self.selling_signal(candles, previous_positions)
+    def run(self):
+        self.search_buying_signal()
+        self.search_selling_signal()
 
-    def buying_signal(self, candles, previous_positions):
-        self.candle_to_buy, self.candle_trigger, self.candles_tail = search_candle_to_buy(candles)
-        opened_positions = previous_positions.df.opened_positions
+    def search_buying_signal(self):
+        self.candle_to_buy, self.candle_trigger, self.candles_tail = search_candle_to_buy(self.candles)
+        opened_positions = self.previous_positions.df.opened_positions
 
-        if self.candle_to_buy.opentime not in opened_positions and self.candle_to_buy_is_the_last_candle():
+        if self.candle_to_buy.opentime not in opened_positions["opentime_buying_candle"]\
+                and self.candle_to_buy_is_the_last_candle():
             self.buy()
-            self.create_new_position()
             self.records_buying_movements()
         else:
             logging.info(f"\n{self.symbol} | Nothing bought.\n")
 
     def buy(self):
-        pass
+        # Make the buy order on Binance
 
-    def create_new_position(self):
-        self.opentime_trigger_candle = candles_trigger["opentime"]
-        self.opentime_buying_candle = candle_to_buy["opentime"]
-        self.buying_timestamp = ... # ça dépend de la réponse de Binance. L'api doit nous confirmer l'achat
-        self.buying_price = ... # ça dépend de Binance
-        self.target_sales_price = ... # ça dépend de Binance
-        self.bet = 50
-        self.crypto_quantity = ... # ça dépend de Binance
-        logging.info("New position created""")
+        # Save buying order by creating a new opened position
+        position = Position(
+            symbol=self.symbol,
+            opentime_buying_candle="",
+            buying_timestamp="",
+            buying_price=0.0,
+            target_sales_price=0.0,
+            bet=50.0,
+            crypto_quantity=0.0
+        )
+        return
 
     def records_buying_movements(self):
         """This method records buying position in the DB"""
@@ -68,6 +70,7 @@ class Action:
 
         # Insert position in Sql database
         df_position.to_sql(tb_name, con=poseidon, if_exists="append", index=False)
+        logging.info("New position created")
 
     def create_df_buying_position(self):
         new_position = pd.DataFrame(
@@ -83,8 +86,8 @@ class Action:
         )
         return new_position
 
-    def selling_signal(self, candles, previous_positions):
-        return False
+    def search_selling_signal(self):
+        return
 
     def sell(self):
         pass

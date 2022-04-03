@@ -22,8 +22,22 @@ class Candle:
     closetime: str = None
 
 
+def create_candle(series):
+    df = series.to_frame().T
+    return Candle(
+        opentime=f"""{df["opentime"]}""",
+        open=df["open"],
+        high=df["high"],
+        low=df["low"],
+        close=df["close"],
+        volume=df["volume"],
+        closetime=f"""{df["closetime"]}"""
+    )
+
+
+@dataclass
 class Position:
-    symbol: str
+    symbol: str = None
     opentime_buying_candle: str = None
     buying_timestamp: str = None
     buying_price: float = None

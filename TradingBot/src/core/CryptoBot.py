@@ -18,8 +18,8 @@ def rsi_strategy(symbol):
     Computer.compute_rsi()
 
     # Step 4
-    buy_sell_crypto = Action(symbol=symbol)
-    buy_sell_crypto.run(candles=candles)
+    buy_sell_crypto = Action(symbol=symbol, candles=candles)
+    buy_sell_crypto.run()
 
     return candles
 
