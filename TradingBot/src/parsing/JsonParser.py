@@ -1,7 +1,7 @@
 from datetime import datetime
 import pandas as pd
 
-from TradingBot.src.utils.config import DataFrame
+from src.utils.tools import DataFrame
 
 
 class JsonParser:

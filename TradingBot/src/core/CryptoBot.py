@@ -1,7 +1,7 @@
-from TradingBot.src.scrapping.RestApiScrapper import RestApiScrapper
-from TradingBot.src.parsing.JsonParser import JsonParser
-from TradingBot.src.strategies.rsi.ComputeRsi import ComputeRsi
-from TradingBot.src.core.Position import Position
+from src.scrapping.RestApiScrapper import RestApiScrapper
+from src.parsing.JsonParser import JsonParser
+from src.strategies.rsi.ComputeRsi import ComputeRsi
+from src.core.Action import Action
 
 
 def rsi_strategy(symbol):
@@ -18,11 +18,8 @@ def rsi_strategy(symbol):
     Computer.compute_rsi()
 
     # Step 4
-    position = Position(symbol)
-    position.run(candles=candles)
-
-    # step 5
-    # records_buy_sell_movements_in_database()
+    buy_sell_crypto = Action(symbol=symbol)
+    buy_sell_crypto.run(candles=candles)
 
     return candles
 

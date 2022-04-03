@@ -1,7 +1,7 @@
 import time
 import schedule
 
-from TradingBot.src.core.CryptoBot import rsi_strategy
+from src.core.CryptoBot import rsi_strategy
 
 
 class Scheduler:
