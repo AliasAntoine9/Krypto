@@ -63,7 +63,7 @@ class PreviousPositions:
     @staticmethod
     def load_properties():
         configs = Properties()
-        with open(Path("src/utils/krypto.properties"), 'rb') as config_file:
+        with open(Path("src/utils/krypto.properties"), "rb") as config_file:
             configs.load(config_file)
             db_uri = configs.get("db_url").data
             return db_uri

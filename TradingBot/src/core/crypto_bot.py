@@ -1,7 +1,7 @@
-from src.scrapping.RestApiScrapper import RestApiScrapper
-from src.parsing.JsonParser import JsonParser
-from src.strategies.rsi.ComputeRsi import ComputeRsi
-from src.core.Action import Action
+from src.scrapping.rest_api_scrapper import RestApiScrapper
+from src.parsing.json_parser import JsonParser
+from src.strategies.rsi.compute_rsi import ComputeRsi
+from src.core.action import Action
 
 
 def rsi_strategy(symbol):

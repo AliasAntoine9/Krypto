@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from dataclasses import dataclass
 import logging
 
-from src.strategies.rsi.DecisionRules import search_candle_to_buy
+from src.strategies.rsi.decision_rules import search_candle_to_buy
 from src.utils.tools import Candle, Position, PreviousPositions
 
 logging.basicConfig(format="%(asctime)s %(message)s", datefmt="%Y/%m/%d %H:%M:%S")
