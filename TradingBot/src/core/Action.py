@@ -1,6 +1,5 @@
 import pandas as pd
 from sqlalchemy import create_engine
-from dataclasses import dataclass
 import logging
 
 from src.strategies.rsi.decision_rules import search_candle_to_buy
@@ -61,15 +60,15 @@ class Action:
 
     def records_buying_movements(self):
         """This method records buying position in the DB"""
-        # poseidon <=> The engine
-        db_uri = "sqlite:///../poseidon.db"
-        poseidon = create_engine(db_uri, echo=True)
+        # ploutos <=> The engine
+        db_uri = "sqlite:///ploutos.db"
+        ploutos = create_engine(db_uri, echo=True)
         tb_name = f"{self.symbol}_opened_positions"
 
         df_position = self.create_df_buying_position()
 
         # Insert position in Sql database
-        df_position.to_sql(tb_name, con=poseidon, if_exists="append", index=False)
+        df_position.to_sql(tb_name, con=ploutos, if_exists="append", index=False)
         logging.info("New position created")
 
     def create_df_buying_position(self):
@@ -94,15 +93,15 @@ class Action:
 
     def records_selling_movements(self):
         """This method records buying position in the DB"""
-        # poseidon <=> The engine
-        db_uri = "sqlite:///../poseidon.db"
-        poseidon = create_engine(db_uri, echo=True)
+        # ploutos <=> The engine
+        db_uri = "sqlite:///ploutos.db"
+        ploutos = create_engine(db_uri, echo=True)
         tb_name = f"{self.symbol}_closed_positions"
 
         df_position = self.create_df_selling_position()
 
         # Insert position in Sql database
-        df_position.to_sql(tb_name, con=poseidon, if_exists="append", index=False)
+        df_position.to_sql(tb_name, con=ploutos, if_exists="append", index=False)
 
     def create_df_selling_position(self) -> pd.DataFrame:
         return
