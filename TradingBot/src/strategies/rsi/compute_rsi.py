@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 class ComputeRsi:
@@ -7,14 +8,15 @@ class ComputeRsi:
         self.multiplier = 2 / (1+14)
         self.inv_multiplier = 1 - self.multiplier
 
-    def compute_rsi(self):
+    def compute_rsi(self) -> pd.DataFrame:
         """Main method of ComputerRsi object"""
         self.create_close_columns()
         self.create_up_and_down_columns()
         self.create_exponential_average()
         self.create_rs_and_rsi()
+        return self.candles
 
-    def create_close_columns(self):
+    def create_close_columns(self) -> None:
         """
         This method is changing the type of 'close' column and adding 'close_lag' column
         close_lag has same values than close column, but the values are lagged with 1 period
@@ -22,7 +24,7 @@ class ComputeRsi:
         self.candles["close"] = self.candles["close"].astype("float", errors="raise")
         self.candles["close_lag"] = self.candles["close"].shift(1)
 
-    def create_up_and_down_columns(self):
+    def create_up_and_down_columns(self) -> None:
         """Create up and down columns which will be used to compute exponential average column"""
         # Unload self
         candles = self.candles.copy()
@@ -44,7 +46,7 @@ class ComputeRsi:
         # Load self
         self.candles = candles
 
-    def create_exponential_average(self):
+    def create_exponential_average(self) -> None:
         """
         This method is adding 2 columns to candles df: exp_avg_up and exp_avg_down
         These columns will be used to compute rs (Relative Strength) column
@@ -78,7 +80,7 @@ class ComputeRsi:
         self.candles["exp_avg_up"] = list_exp_avg_up
         self.candles["exp_avg_down"] = list_exp_avg_down
 
-    def create_rs_and_rsi(self):
+    def create_rs_and_rsi(self) -> None:
         """
         This method is adding 2 columns to candles df: rs (Relative Strength) and rsi (Relative Strength Index)
         """

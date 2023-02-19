@@ -21,6 +21,10 @@ class Action:
         self.candles_tail = pd.DataFrame()
         self.previous_positions = PreviousPositions(self.symbol)
 
+    def run(self):
+        self.search_buying_signal()
+        self.search_selling_signal()
+
     def candle_to_buy_is_the_last_candle(self):
         print("wait")
         if self.candle_to_buy.closetime == self.candle_trigger.opentime:
@@ -28,17 +32,15 @@ class Action:
         else:
             return False
 
-    def run(self):
-        self.search_buying_signal()
-        self.search_selling_signal()
-
     def search_buying_signal(self):
         self.candle_to_buy, self.candle_trigger, self.candles_tail = search_candle_to_buy(self.candles)
         opened_positions = self.previous_positions.df.opened_positions
 
-        if self.candle_to_buy.opentime not in opened_positions["opentime_buying_candle"]\
+        if self.candle_to_buy is not None \
+                and self.candle_to_buy.opentime not in opened_positions["opentime_buying_candle"] \
                 and self.candle_to_buy_is_the_last_candle():
             self.buy()
+            self.send_telegram_notification()
             self.records_buying_movements()
         else:
             logging.info(f"\n{self.symbol} | Nothing bought.\n")
@@ -56,6 +58,10 @@ class Action:
             bet=50.0,
             crypto_quantity=0.0
         )
+        return
+
+    def send_telegram_notification(self):
+        """Use Telegram API to get the notification that a buying order were passed"""
         return
 
     def records_buying_movements(self):

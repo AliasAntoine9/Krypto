@@ -70,15 +70,19 @@ class PreviousPositions:
 
     def get_positions(self):
         """This method allows to get the opened position for 1 symbol"""
-        # poseidon <=> The engine
+        # pactole <=> The engine
 
         for status in ("opened", "closed"):
-            poseidon = create_engine(self.db_uri, echo=True)
+            pactole = create_engine(self.db_uri, echo=True)
             tb_name = f"{self.symbol}_{status}_positions"
 
-            positions = pd.read_sql_table(
-                table_name=tb_name,
-                con=poseidon
-            )
+            try:
+                positions = pd.read_sql_table(
+                    table_name=tb_name,
+                    con=pactole
+                )
+            except ValueError:
+                print(f"No {status} positions already existing. A new df will be created")
+                positions = pd.DataFrame()
 
             setattr(self.df, f"{status}_positions", positions)

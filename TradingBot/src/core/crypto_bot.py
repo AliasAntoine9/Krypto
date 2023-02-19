@@ -1,10 +1,12 @@
+import pandas as pd
+
 from src.scrapping.rest_api_scrapper import RestApiScrapper
 from src.parsing.json_parser import JsonParser
 from src.strategies.rsi.compute_rsi import ComputeRsi
 from src.core.action import Action
 
 
-def rsi_strategy(symbol):
+def rsi_strategy(symbol) -> pd.DataFrame:
     # Step 1
     scrapper = RestApiScrapper(symbol=symbol)
     response = scrapper.get_candles()
@@ -15,7 +17,7 @@ def rsi_strategy(symbol):
 
     # Step 3
     Computer = ComputeRsi(candles)
-    Computer.compute_rsi()
+    candles = Computer.compute_rsi()
 
     # Step 4
     buy_sell_crypto = Action(symbol=symbol, candles=candles)
